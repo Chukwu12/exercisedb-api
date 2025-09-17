@@ -1,9 +1,9 @@
-import data from '../../src/data/exercises.json';
+import exercises from "../../assets/exercises.json";
 
 export default function handler(req, res) {
   try {
-    res.status(200).json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch exercises" });
+    res.status(200).json(exercises);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to load exercises" });
   }
 }
