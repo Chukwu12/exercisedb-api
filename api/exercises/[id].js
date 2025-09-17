@@ -1,13 +1,23 @@
-import data from '../../src/data/exercises.json';
+import path from "path";
+import fs from "fs";
 
 export default function handler(req, res) {
-  const { id } = req.query;
+  try {
+    const { id } = req.query;
 
-  const exercise = data.find((ex) => ex.exerciseId === id);
+    const filePath = path.join(process.cwd(), "src", "data", "exercises.json");
+    const jsonData = fs.readFileSync(filePath, "utf-8");
+    const exercises = JSON.parse(jsonData);
 
-  if (exercise) {
+    const exercise = exercises.find((ex) => ex.id.toString() === id);
+
+    if (!exercise) {
+      return res.status(404).json({ error: "Exercise not found" });
+    }
+
     res.status(200).json(exercise);
-  } else {
-    res.status(404).json({ error: "Exercise not found" });
+  } catch (error) {
+    console.error("Error loading exercise by id:", error);
+    res.status(500).json({ error: "Failed to load exercise" });
   }
 }

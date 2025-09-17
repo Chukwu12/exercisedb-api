@@ -1,15 +1,21 @@
-import data from '../../../src/data/exercises.json';
+import path from "path";
+import fs from "fs";
 
 export default function handler(req, res) {
-  const { part } = req.query;
+  try {
+    const { part } = req.query;
 
-  const exercises = data.filter((ex) =>
-    ex.bodyParts.some((bp) => bp.toLowerCase() === part.toLowerCase())
-  );
+    const filePath = path.join(process.cwd(), "src", "data", "exercises.json");
+    const jsonData = fs.readFileSync(filePath, "utf-8");
+    const exercises = JSON.parse(jsonData);
 
-  if (exercises.length > 0) {
-    res.status(200).json(exercises);
-  } else {
-    res.status(404).json({ error: "No exercises found for this body part" });
+    const filtered = exercises.filter(
+      (ex) => ex.bodyPart.toLowerCase() === part.toLowerCase()
+    );
+
+    res.status(200).json(filtered);
+  } catch (error) {
+    console.error("Error filtering by body part:", error);
+    res.status(500).json({ error: "Failed to filter exercises" });
   }
 }
